@@ -1,3 +1,9 @@
+## UI Library
+
+This IOT project uses tremor for the dashboard visuals: https://www.tremor.so/docs/getting-started/installation
+
+## NextJS
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
