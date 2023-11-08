@@ -1,9 +1,10 @@
 /** @type {import('tailwindcss').Config} */
-/* eslint-disable max-len */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "../node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', // Tremor module
   ],
   theme: {
     transparent: "transparent",
@@ -64,7 +65,7 @@ module.exports = {
           },
           content: {
             subtle: "#4b5563", // gray-600
-            DEFAULT: "#6b7280", // gray-600
+            DEFAULT: "#6b7280", // gray-500
             emphasis: "#e5e7eb", // gray-200
             strong: "#f9fafb", // gray-50
             inverted: "#000000", // black
@@ -124,4 +125,4 @@ module.exports = {
     },
   ],
   plugins: [require("@headlessui/tailwindcss")],
-};
+}
