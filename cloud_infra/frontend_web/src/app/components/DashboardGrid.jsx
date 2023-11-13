@@ -9,7 +9,7 @@ import {
   ProgressCircle,
 } from "@tremor/react";
 
-export default () => (
+const DashboardGrid = () => (
   <>
     <Grid numItems={1} numItemsSm={2} numItemsLg={3} className="gap-4">
       <Col numColSpan={1} numColSpanLg={2}>
@@ -48,3 +48,5 @@ export default () => (
     </Grid>
   </>
 );
+
+export default DashboardGrid;
