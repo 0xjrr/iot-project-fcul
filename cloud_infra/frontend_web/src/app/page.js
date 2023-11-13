@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Grid from './components/Grid'
+import DashboardGrid from './components/DashboardGrid'
 
 export default function Home() {
   return (
@@ -7,7 +7,7 @@ export default function Home() {
       <h1 className=''>
         Dashboard Template:
       </h1>
-      <Grid />
+      <DashboardGrid />
     </main>
   )
 }
