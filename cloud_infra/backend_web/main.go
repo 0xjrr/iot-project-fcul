@@ -1,13 +1,68 @@
 package main
 
 import (
-    "net/http"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-func main() {
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte("Hello, World!"))
-    })
+// User represents the user model
+type User struct {
+	gorm.Model
+	Name   string
+	Email  string `gorm:"type:varchar(100);unique_index"`
+	Age    int
+	Gender string
+}
 
-    http.ListenAndServe(":8080", nil)
+// SensorData represents the sensor data model
+type SensorData struct {
+	gorm.Model
+	UserID    uint `gorm:"index;constraint:OnDelete:CASCADE"`
+	AccelX    float64
+	AccelY    float64
+	AccelZ    float64
+	GyroX     float64
+	GyroY     float64
+	GyroZ     float64
+	Activity  bool
+	Timestamp time.Time
+}
+
+func main() {
+	// Connect to the database
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	// Migrate the schema
+	db.AutoMigrate(&User{}, &SensorData{})
+
+	// Set up Gin
+	r := gin.Default()
+
+	// Endpoint for creating a new user
+	r.POST("/user", func(c *gin.Context) {
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		db.Create(&user)
+		c.JSON(http.StatusOK, gin.H{"message": "User created successfully", "user": user})
+	})
+
+	// Endpoint for fetching sensor data
+	r.GET("/data", func(c *gin.Context) {
+		var sensorData []SensorData
+		db.Find(&sensorData)
+		c.JSON(http.StatusOK, sensorData)
+	})
+
+	// Run the server
+	r.Run() // listen and serve on 0.0.0.0:8080
 }
