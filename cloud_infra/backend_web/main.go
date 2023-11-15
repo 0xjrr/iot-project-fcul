@@ -45,6 +45,11 @@ func main() {
 	// Set up Gin
 	r := gin.Default()
 
+	r.GET("/", func(c *gin.Context) {
+
+		c.JSON(http.StatusOK, gin.H{"message": "Hey"})
+	})
+
 	// Endpoint for creating a new user
 	r.POST("/user", func(c *gin.Context) {
 		var user User
