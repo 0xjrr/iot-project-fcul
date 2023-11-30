@@ -59,6 +59,7 @@ services:
       DB_PASS: dbpass
       DB_NAME: idcsensordb
       DB_PORT: 3306
+      PORT: 8080  # GoLang backend port to serve gin
     networks:
       idc-net:
         ipv4_address: 172.100.10.16
