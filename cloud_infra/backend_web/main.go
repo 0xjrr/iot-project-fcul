@@ -54,6 +54,11 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default port if not specified
+	}
+
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
 	dbName := os.Getenv("DB_NAME")
@@ -119,5 +124,5 @@ func main() {
 	})
 
 	// Run the server
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
 }
