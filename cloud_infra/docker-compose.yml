@@ -64,9 +64,9 @@ services:
         ipv4_address: 172.100.10.16
     volumes:
       - ./backend_web:/app
-    command: ./main
     depends_on:
       - mysql
+    command: ["/wait-for-mysql.sh", "mysql", "./main"]
 
   react-frontend:
     build: ./frontend_web
