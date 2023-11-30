@@ -25,7 +25,7 @@ type User struct {
 // SensorData represents the sensor data model
 type SensorData struct {
 	gorm.Model
-	UserID    uint `gorm:"index;constraint:OnDelete:CASCADE"`
+	Device    string `gorm:"foreignKey:Device;constraint:OnDelete:CASCADE"`
 	AccelX    float64
 	AccelY    float64
 	AccelZ    float64
