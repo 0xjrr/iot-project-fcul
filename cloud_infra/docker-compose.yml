@@ -57,7 +57,7 @@ services:
       DB_HOST: mysql
       DB_USER: dbuser
       DB_PASS: dbpass
-      DB_NAME: dbname1
+      DB_NAME: idcsensordb
       DB_PORT: 3306
     networks:
       idc-net:
@@ -86,7 +86,7 @@ services:
       restart: always
       environment:
         MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: dbname1
+        MYSQL_DATABASE: idcsensordb
         MYSQL_USER: dbuser
         MYSQL_PASSWORD: dbpass
       volumes:
