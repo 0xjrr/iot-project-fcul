@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import DashboardGrid from './components/DashboardGrid'
+import FormCreateUser from './components/FormCreateUser'
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
         Dashboard Template:
       </h1>
       <DashboardGrid />
+      <FormCreateUser />
     </main>
   )
 }
