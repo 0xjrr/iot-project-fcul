@@ -16,9 +16,10 @@ import (
 type User struct {
 	gorm.Model
 	Name   string
-	Email  string `gorm:"type:varchar(100);unique_index"`
+	Email  string `gorm:"primary_key;type:varchar(100);unique_index"`
 	Age    int
 	Gender string
+	Device string // This is a unique identifier for the device
 }
 
 // SensorData represents the sensor data model
