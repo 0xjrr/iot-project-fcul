@@ -15,8 +15,15 @@ export default function UserSelection() {
     <Dropdown>
       <DropdownTrigger>
         <Button 
+          className=" 
+          bg-blue-500 
+          text-white 
+          max-h-12
+          py-1 
+          px-6 
+          rounded-md 
+          hover:bg-blue-700"          
           variant="bordered" 
-          className="capitalize"
         >
           {selectedValue}
         </Button>
@@ -33,7 +40,7 @@ export default function UserSelection() {
         <DropdownItem key="number">Number</DropdownItem>
         <DropdownItem key="date">Date</DropdownItem>
         <DropdownItem key="single_date">Single Date</DropdownItem>
-        <DropdownItem key="iteration">Iteration</DropdownItem>
+        <DropdownItem key="iteration">+ Create User</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
