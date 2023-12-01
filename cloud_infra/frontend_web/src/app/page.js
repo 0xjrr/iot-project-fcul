@@ -18,7 +18,7 @@ export default function Home() {
           {" "}
           <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl ">Dashboard</h1>
         </div>
-        <UserSelection /> {/* This is your new component */}
+        <UserSelection />
       </div>
       <DashboardGrid />
       <FormCreateUser />
