@@ -15,11 +15,12 @@ import (
 // User represents the user model
 type User struct {
 	gorm.Model
-	Name   string `gorm:"not null"`
-	Email  string `gorm:"primary_key; unique_index"`
-	Age    int    `gorm:"not null"`
-	Gender string `gorm:"not null"`
-	Device string `gorm:"primaryKey"` // This is a unique identifier for the device
+	Name       string     `gorm:"not null"`
+	Email      string     `gorm:"primary_key; unique_index"`
+	Age        int        `gorm:"not null"`
+	Gender     string     `gorm:"not null"`
+	Device     string     `gorm:"primaryKey;unique;not null;index"` // This is a unique identifier for the device
+	SensorData SensorData `gorm:"foreignKey:Device;references:Device;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 // SensorData represents the sensor data model
@@ -34,7 +35,6 @@ type SensorData struct {
 	GyroZ     float64   `gorm:"not null"`
 	Activity  bool      `gorm:"not null"`
 	Timestamp time.Time `gorm:"not null"`
-	User      User      `gorm:"foreignKey:Device;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func CORSMiddleware() gin.HandlerFunc {
