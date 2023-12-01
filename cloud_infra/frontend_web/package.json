@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/react": "^2.2.9",
     "@tremor/react": "^3.11.0",
     "axios": "^1.6.2",
     "next": "14.0.1",
