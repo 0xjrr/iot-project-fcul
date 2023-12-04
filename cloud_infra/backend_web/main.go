@@ -130,7 +130,7 @@ func main() {
 			return
 		}
 		db.Create(&data)
-		ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully", "user": data})
+		ctx.JSON(http.StatusOK, gin.H{"message": "Data created successfully", "data": data})
 	})
 
 	// Run the server
