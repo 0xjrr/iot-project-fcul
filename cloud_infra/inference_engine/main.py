@@ -6,15 +6,16 @@ import time
 import os
 
 # Configuration for MQTT
-MQTT_BROKER = 'mosquitto'  # Use the service name defined in docker-compose
-MQTT_PORT = 1883
-MQTT_TOPIC = 'your/topic'
+
+MQTT_BROKER = os.getenv('MQTT_BROKER', '0.0.0.0')  # Use the service name defined in docker-compose
+MQTT_PORT = int(os.getenv('MQTT_PORT', 1883))  # MQTT port
+MQTT_TOPIC = os.getenv('MQTT_TOPIC', 'your/topic')
 
 # Configuration for MySQL
-MYSQL_HOST = 'mysql'  # Use the service name defined in docker-compose
-MYSQL_DATABASE = 'your_database'
-MYSQL_USER = 'your_user'
-MYSQL_PASSWORD = 'your_password'
+MYSQL_HOST = os.getenv('MYSQL_HOST', '0.0.0.0')    # MySQL host
+MYSQL_DATABASE = os.getenv('MYSQL_DATABASE', 'your_database')  # MySQL database name
+MYSQL_USER = os.getenv('MYSQL_USER', 'your_user')  # MySQL username
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'your_password')  # MySQL password
 
 # Configuration for model checking
 MODEL_PATH = '/models/model.pkl'
@@ -58,10 +59,6 @@ def push_to_database(data):
             print("Data pushed to database")
     except Exception as e:
         print("Error while connecting to MySQL", e)
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
 
 # Define the MQTT callbacks
 def on_connect(client, userdata, flags, rc):
