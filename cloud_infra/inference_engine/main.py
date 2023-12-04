@@ -56,7 +56,7 @@ def push_to_database(data):
             cursor.execute(query, data)
             connection.commit()
             print("Data pushed to database")
-    except Error as e:
+    except Exception as e:
         print("Error while connecting to MySQL", e)
     finally:
         if connection.is_connected():
