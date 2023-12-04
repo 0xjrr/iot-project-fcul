@@ -105,10 +105,20 @@ func main() {
 		c.JSON(http.StatusOK, users)
 	})
 
-	// Endpoint for fetching sensor data
+	// Endpoint for fetching sensor data with sensor name filter
 	r.GET("/data", func(c *gin.Context) {
 		var sensorData []SensorData
-		db.Find(&sensorData)
+
+		// Check for a sensor name query parameter
+		sensorName := c.Query("sensorName")
+		if sensorName != "" {
+			// Filter by sensor name
+			db.Where("device = ?", sensorName).Find(&sensorData)
+		} else {
+			// No filter, get all sensor data
+			db.Find(&sensorData)
+		}
+
 		c.JSON(http.StatusOK, sensorData)
 	})
 
