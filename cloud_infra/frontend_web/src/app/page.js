@@ -3,6 +3,7 @@ import DashboardGrid from "./components/DashboardGrid";
 import FormCreateUser from "./components/FormCreateUser";
 import UserSelection from "./components/UserSelection";
 import image from "./logo/logo.webp";
+import SensorDataComponent from "./components/SensorDataComponent";
 
 export default function Home() {
   return (
@@ -22,7 +23,7 @@ export default function Home() {
       </div>
       <DashboardGrid />
       <FormCreateUser />
-      <UserSelection />
+      <SensorDataComponent />
     </main>
   );
 }
