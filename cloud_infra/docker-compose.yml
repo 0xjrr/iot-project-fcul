@@ -47,6 +47,33 @@ services:
 #
 # Add more containers
 #
+  ml-training:
+    build: ./ml_training  # or image: <ml-training-image>
+    container_name: ml-training
+    volumes:
+      - ./data/model:/models
+      - ./data/training:/data
+    networks:
+      idc-net:
+        ipv4_address: 172.100.10.21  # Assign a unique IP address
+
+  ml-inference:
+    build: ./inference_engine  # or image: <ml-inference-image>
+    container_name: ml-inference
+    environment:
+      DB_HOST: mysql
+      DB_USER: dbuser
+      DB_PASS: dbpass
+      DB_NAME: idcsensordb
+      DB_PORT: 3306
+    volumes:
+      - ./data/model:/models
+    depends_on:
+      - mysql
+      - go-backend
+    networks:
+      idc-net:
+        ipv4_address: 172.100.10.22  # Assign a unique IP address
 
   go-backend:
     build: ./backend_web
