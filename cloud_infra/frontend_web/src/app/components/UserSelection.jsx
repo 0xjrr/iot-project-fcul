@@ -25,6 +25,8 @@ export default function UserSelection() {
 
   const handleCreateUserClick = () => {
     // Open a new window with a form for creating a user
+    console.log('Opening a new window with a form for creating a user'); 
+    
     window.open('/path-to-create-user-form', '_blank'); 
   };
 
@@ -51,6 +53,8 @@ export default function UserSelection() {
       </DropdownTrigger>
       <DropdownMenu
         aria-label="User selection"
+        className="          rounded-md 
+        "
         variant="flat"
         disallowEmptySelection
         selectionMode="single"
@@ -58,9 +62,25 @@ export default function UserSelection() {
         onSelectionChange={setSelectedKeys}
       >
         {users.map(user => (
-          <DropdownItem key={user.id}>{user.name}</DropdownItem> // Assuming each user has `id` and `name`
+          <DropdownItem className="
+          bg-gray-500 
+          text-white 
+          max-h-12 
+          py-1 
+          px-6 
+          hover:bg-gray-700" 
+          variant="bordered"
+          key={user.ID} 
+          textValue={user.Name}>{user.Name}</DropdownItem> // Assuming each user has `id` and `name`
         ))}
-        <DropdownItem key="create_user" onSelect={handleCreateUserClick}>+ Create User</DropdownItem>
+        <DropdownItem className="
+        bg-blue-500 
+        text-white 
+        max-h-12 
+        py-1 
+        px-6  
+        hover:bg-blue-700" 
+        variant="bordered" key="create_user" onSelect={handleCreateUserClick}>+ Create User</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
