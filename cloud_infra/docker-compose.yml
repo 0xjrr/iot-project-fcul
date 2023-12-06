@@ -34,28 +34,28 @@ services:
           idc-net:
               ipv4_address: 172.100.10.10
 
-  web:
-      build: cloud-Infrastructure/data/app-data/
-      container_name: app
-      ports:
-        - "8000:8000"
-      networks:
-          idc-net:
-              ipv4_address: 172.100.10.14
+  # web:
+  #     build: cloud-Infrastructure/data/app-data/
+  #     container_name: app
+  #     ports:
+  #       - "8000:8000"
+  #     networks:
+  #         idc-net:
+  #             ipv4_address: 172.100.10.14
 
 
 #
 # Add more containers
 #
-  ml-training:
-    build: ./ml_training  # or image: <ml-training-image>
-    container_name: ml-training
-    volumes:
-      - ./data/model:/models
-      - ./data/training:/data
-    networks:
-      idc-net:
-        ipv4_address: 172.100.10.21  # Assign a unique IP address
+  # ml-training:
+  #   build: ./ml_training  # or image: <ml-training-image>
+  #   container_name: ml-training
+  #   volumes:
+  #     - ./data/model:/models
+  #     - ./data/training:/data
+  #   networks:
+  #     idc-net:
+  #       ipv4_address: 172.100.10.21  # Assign a unique IP address
 
   ml-inference:
     build: ./inference_engine  # or image: <ml-inference-image>
