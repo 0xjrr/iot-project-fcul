@@ -1,17 +1,29 @@
 # Use an official Python runtime as a parent image
-FROM python:3.8-slim
+FROM python:3.11.6-bullseye
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /usr/src/app
+# Install necessary system dependencies
+# Combine update, add packages, and clean up in one RUN to reduce image size
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    gfortran \
+    libblas-dev \
+    liblapack-dev \
+    libatlas-base-dev 
+
+# Copy the current directory contents into the container at /app
 COPY . .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir scikit-learn
+# Install Python dependencies
+# Install dependencies
+RUN pip install -r requirements.txt
 
 # Make directory to store models
 RUN mkdir -p /models
 
-# Run train.py when the container launches
+# Run main.py when the container launches
 CMD ["python", "./main.py"]
