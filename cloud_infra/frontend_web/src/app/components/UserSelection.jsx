@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 
-export default function UserSelection({ users, onUserSelect, onOpenModal }) {
+export default function UserSelection({ users, onUserSelect, setShowForm }) {
   const [selectedKeys, setSelectedKeys] = useState(new Set());
+
+  
 
   const handleSelectionChange = (key) => {
     if (key === "create_user") {
-      onOpenModal();
+      setShowForm(true);
     } else {
       setSelectedKeys(new Set([key]));
       const user = users.find((u) => u.ID === key);
