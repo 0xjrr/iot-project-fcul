@@ -34,9 +34,8 @@ pipeline = Pipeline([
 
 # Train the pipeline
 pipeline.fit(X_train, y_train)
-print (pipeline)
 
 # Serialize the pipeline using pickle
-with open('pipeline.pkl', 'wb') as file:
+with open(os.path.join(os.getcwd(),'model','pipeline.pkl'), 'wb+') as file:
     pickle.dump(pipeline, file)
 
