@@ -1,0 +1,33 @@
+SELECT MetersPerSecond
+FROM WalkingSpeed, users WHERE users.age>=WalkingSpeed.AgeMin and users.age<=WalkingSpeed.AgeMax and users.gender = WalkingSpeed.Gender and users.device = 'XPTO03';
+
+
+
+SELECT * 
+from users 
+where device = 'XPTO03';
+
+SELECT * FROM WalkingSpeed;
+
+
+
+SELECT *, (activity+1)*MetersPerSecond*seconds_t FROM (
+SELECT activity, Count(*) as seconds_t FROM 
+(
+SELECT 
+MAX(activity) activity, 
+TIME(timestamp) as recorded_time
+FROM sensor_data 
+WHERE device = 'XPTO03'
+GROUP BY recorded_time
+) activity_table
+GROUP BY 
+activity) new, 
+(SELECT MetersPerSecond
+FROM WalkingSpeed, users WHERE users.age>=WalkingSpeed.AgeMin and users.age<=WalkingSpeed.AgeMax and users.gender = WalkingSpeed.Gender and users.device = 'XPTO03'
+) ms;
+
+
+
+
+
