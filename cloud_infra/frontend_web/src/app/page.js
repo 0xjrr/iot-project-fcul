@@ -7,16 +7,15 @@ import UserSelection from "./components/UserSelection";
 import image from "./logo/logo.webp";
 import SensorDataComponent from "./components/SensorDataComponent";
 import { useState, useEffect } from "react";
+import { Modal } from "@nextui-org/react";
+
 
 export default function Home() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
-  // Function to open the modal
-  const openModal = () => setIsModalOpen(true);
-  // Function to close the modal
-  const closeModal = () => setIsModalOpen(false);
+
 
   useEffect(() => {
     // Fetch users from the server
@@ -52,13 +51,27 @@ export default function Home() {
             height={100}
           />
           {" "}
-          <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl ">Dashboard</h1>
+          <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl ">
+            {selectedUser ? `Hello, ${selectedUser.Name}` : 'Dashboard'}
+          </h1>
         </div>
-        <UserSelection onUserSelect={handleUserSelection} users={users} onOpenModal={openModal}/>
+        <UserSelection onUserSelect={handleUserSelection} users={users} setShowForm={setShowForm}/>
       </div>
       <DashboardGrid />
-      <FormCreateUser />
       <SensorDataComponent />
+      {showForm && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10">
+          <div className="bg-black p-6 rounded-lg shadow-lg">
+            <FormCreateUser />
+            <button
+              className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
+              onClick={() => setShowForm(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
