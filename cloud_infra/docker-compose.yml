@@ -49,15 +49,15 @@ services:
 # Add more containers
 #
 
-  # ml-training:
-  #   build: ./ml_training  # or image: <ml-training-image>
-  #   container_name: ml-training
-  #   volumes:
-  #     - ./data/model:/models
-  #     - ./data/training:/data
-  #   networks:
-  #     idc-net:
-  #       ipv4_address: 172.100.10.21  # Assign a unique IP address
+  ml-training:
+    build: ./ml_training  
+    container_name: ml-training
+    volumes:
+      - ./data/model:/app/model
+      - ./data/training:/app/data
+    networks:
+      idc-net:
+        ipv4_address: 172.100.10.21  # Assign a unique IP address
 
   ml-inference:
     build: ./inference_engine  # or image: <ml-inference-image>
@@ -68,8 +68,11 @@ services:
       DB_PASS: dbpass
       DB_NAME: idcsensordb
       DB_PORT: 3306
+      MQTT_BROKER: mosquitto  # Use the service name defined in docker-compose
+      MQTT_PORT: 1883  # MQTT port
+      MQTT_TOPIC: your/topic
     volumes:
-      - ./data/model:/models
+      - ./data/model:/app/models
     depends_on:
       - mysql
       - go-backend
