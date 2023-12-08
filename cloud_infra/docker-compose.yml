@@ -48,6 +48,18 @@ services:
 #
 # Add more containers
 #
+  mqtt-subscriber:
+    build: ./mqtt_subscriber  
+    container_name: mqtt-subscriber
+    environment:
+      MQTT_BROKER: mosquitto  # Use the service name defined in docker-compose
+      MQTT_PORT: 8883  # MQTT port
+      MQTT_TOPIC: your/topic
+    depends_on:
+      - mosquitto
+    networks:
+      idc-net:
+        ipv4_address: 172.100.10.23  # Assign a unique IP address
 
   ml-training:
     build: ./ml_training  
@@ -68,9 +80,6 @@ services:
       DB_PASS: dbpass
       DB_NAME: idcsensordb
       DB_PORT: 3306
-      MQTT_BROKER: mosquitto  # Use the service name defined in docker-compose
-      MQTT_PORT: 1883  # MQTT port
-      MQTT_TOPIC: your/topic
     volumes:
       - ./data/model:/app/models
     depends_on:
