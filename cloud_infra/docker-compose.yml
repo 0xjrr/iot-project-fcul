@@ -54,7 +54,7 @@ services:
     environment:
       MQTT_BROKER: mosquitto  # Use the service name defined in docker-compose
       MQTT_PORT: 8883  # MQTT port
-      MQTT_TOPIC: your/topic
+      MQTT_TOPIC: sensor/data
     depends_on:
       - mosquitto
     networks:

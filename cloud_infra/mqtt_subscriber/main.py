@@ -4,7 +4,7 @@ import os
 # MQTT Broker Information
 MQTT_BROKER = os.getenv('MQTT_BROKER', '0.0.0.0')  # Use the service name defined in docker-compose
 MQTT_PORT = int(os.getenv('MQTT_PORT', 8883))  # MQTT port
-MQTT_TOPIC = os.getenv('MQTT_TOPIC', 'your/topic')
+MQTT_TOPIC = os.getenv('MQTT_TOPIC', 'sensor/data')
 
 print(f"MQTT Broker: {MQTT_BROKER}")
 print(f"MQTT Port: {MQTT_PORT}")
