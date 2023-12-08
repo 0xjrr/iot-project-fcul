@@ -23,7 +23,7 @@ COPY . .
 RUN pip install -r requirements.txt
 
 # Make directory to store models
-RUN mkdir -p /models
+RUN mkdir -p ./app/models
 
 # Run main.py when the container launches
 CMD ["python", "./main.py"]
