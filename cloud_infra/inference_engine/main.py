@@ -1,48 +1,33 @@
-import paho.mqtt.client as mqtt
 import pickle
 import mysql.connector
-import threading
-import time
 import os
-
-# Configuration for MQTT
-
-MQTT_BROKER = os.getenv('MQTT_BROKER', '0.0.0.0')  # Use the service name defined in docker-compose
-MQTT_PORT = int(os.getenv('MQTT_PORT', 1883))  # MQTT port
-MQTT_TOPIC = os.getenv('MQTT_TOPIC', 'your/topic')
+import time
+import grpc
+# Assuming you have implemented gRPC service
+# from your_grpc_module import YourPredictServiceServicer, add_YourPredictServiceServicer_to_server
 
 # Configuration for MySQL
-MYSQL_HOST = os.getenv('MYSQL_HOST', '0.0.0.0')    # MySQL host
-MYSQL_DATABASE = os.getenv('MYSQL_DATABASE', 'your_database')  # MySQL database name
-MYSQL_USER = os.getenv('MYSQL_USER', 'your_user')  # MySQL username
-MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'your_password')  # MySQL password
+MYSQL_HOST = os.getenv('MYSQL_HOST', '0.0.0.0')
+MYSQL_DATABASE = os.getenv('MYSQL_DATABASE', 'your_database')
+MYSQL_USER = os.getenv('MYSQL_USER', 'your_user')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'your_password')
 
 # Configuration for model checking
-MODEL_PATH = '/models/model.pkl'
+MODEL_PATH = os.path.join(os.getcwd(), 'models', 'pipeline.pkl')
 model = None
-last_modified_time = None
+
+# Define the scaling function
+def scale01(x):
+    return (x - x.min()) / (x.max() - x.min())
 
 def load_model():
-    global model, last_modified_time
-    if os.path.exists(MODEL_PATH):
-        modified_time = os.path.getmtime(MODEL_PATH)
-        if modified_time != last_modified_time:
-            with open(MODEL_PATH, 'rb') as file:
-                model = pickle.load(file)
-                last_modified_time = modified_time
-                print("Model loaded/updated.")
-    else:
-        print("Model file not found.")
-
-def model_check_thread():
-    while True:
-        load_model()
+    while not os.path.exists(MODEL_PATH):
+        print("Waiting for model file...")
         time.sleep(10)  # Check every 10 seconds
+    with open(MODEL_PATH, 'rb') as file:
+        model = pickle.load(file)
+    print("Model loaded.")
 
-# Initialize model checking in a separate thread
-threading.Thread(target=model_check_thread, daemon=True).start()
-
-# [Remaining MQTT and MySQL setup]
 # Function to push data to MySQL
 def push_to_database(data):
     try:
@@ -53,31 +38,29 @@ def push_to_database(data):
             password=MYSQL_PASSWORD)
         if connection.is_connected():
             cursor = connection.cursor()
-            query = "INSERT INTO your_table (columns) VALUES (%s, %s, ...)"  # Customize your SQL query
+            query = "INSERT INTO your_table (columns) VALUES (%s, %s, ...)"
             cursor.execute(query, data)
             connection.commit()
             print("Data pushed to database")
+            connection.close()
     except Exception as e:
         print("Error while connecting to MySQL", e)
+        if connection.is_connected():
+            connection.close()
+# gRPC Service
+# class YourService(YourPredictServiceServicer):
+#     def Predict(self, request, context):
+#         # Use the loaded model for prediction
+#         # result = model.predict(process_request_data(request))
+#         # push_to_database(result)
+#         return YourPredictResponse(result)
 
-# Define the MQTT callbacks
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
-    client.subscribe(MQTT_TOPIC)
+# Load model
+load_model()
 
-def on_message(client, userdata, msg):
-    print("Message received. Topic: {}. Payload: {}".format(msg.topic, str(msg.payload)))
-    # Here you can add your inference logic using the loaded model
-    # Example: result = model.predict(process_payload(msg.payload))
-    # Then push the result to the database
-    # Example: push_to_database(result)
-
-# Setup MQTT client
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-
-client.connect(MQTT_BROKER, MQTT_PORT, 60)
-client.loop_forever()
-
-# The MQTT client setup, callback definitions, and loop would remain the same
+# Start gRPC server
+# server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+# add_YourPredictServiceServicer_to_server(YourService(), server)
+# server.add_insecure_port('[::]:50051')
+# server.start()
+# server.wait_for_termination()
