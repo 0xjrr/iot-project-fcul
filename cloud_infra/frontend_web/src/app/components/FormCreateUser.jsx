@@ -7,6 +7,7 @@ const FormCreateUser = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
+  const [weight, setWeight] = useState("");
   const [gender, setGender] = useState("");
   const [device, setDevice] = useState("");
 
@@ -17,6 +18,7 @@ const FormCreateUser = () => {
       Name: name,
       Email: email,
       Age: parseInt(age),
+      Weight: parseInt(weight),
       Gender: gender,
       Device: device,
     };
@@ -43,6 +45,7 @@ const FormCreateUser = () => {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
       </div>
       <div className="flex justify-between items-center">
@@ -52,6 +55,20 @@ const FormCreateUser = () => {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+          title="Please enter a valid email address."
+          required
+        />
+      </div>
+      <div className="flex justify-between items-center">
+        <label className="w-1/3">Weight:</label>
+        <input
+          className="bg-transparent text-white rounded-md border-white border-2 w-2/3"
+          type="number"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          min={20} // Set minimum value
+          required
         />
       </div>
       <div className="flex justify-between items-center">
@@ -61,16 +78,23 @@ const FormCreateUser = () => {
           type="number"
           value={age}
           onChange={(e) => setAge(e.target.value)}
+          min={20} // Set minimum value
+          max={89} // Set maximum value
+          required
         />
       </div>
       <div className="flex justify-between items-center">
         <label className="w-1/3">Gender:</label>
-        <input
+        <select
           className="bg-transparent text-white rounded-md border-white border-2 w-2/3"
-          type="text"
           value={gender}
           onChange={(e) => setGender(e.target.value)}
-        />
+          required
+        >
+          <option className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3" value="" disabled selected>Select Gender</option> {/* Placeholder option */}
+          <option className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3" value="Female">Female</option>
+          <option className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3" value="Male">Male</option>
+        </select>
       </div>
       <div className="flex justify-between items-center">
         <label className="w-1/3">Device:</label>
@@ -79,9 +103,13 @@ const FormCreateUser = () => {
           type="text"
           value={device}
           onChange={(e) => setDevice(e.target.value)}
+          required
         />
       </div>
-      <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+      <button
+        type="submit"
+        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+      >
         Create User
       </button>
     </form>
