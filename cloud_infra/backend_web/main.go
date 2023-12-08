@@ -19,6 +19,7 @@ type User struct {
 	Email      string       `gorm:"primary_key; unique_index"`
 	Age        int          `gorm:"not null"`
 	Gender     string       `gorm:"not null"`
+	Weight     int          `gorm:"not null"`
 	Device     string       `gorm:"primaryKey;unique;not null;index"` // This is a unique identifier for the device
 	SensorData []SensorData `gorm:"foreignKey:Device;references:Device;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
@@ -91,7 +92,13 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		db.Create(&user)
+		result := db.Create(&user)
+		if result.Error != nil {
+			// Log the error and return a response indicating the failure
+			log.Printf("Error creating user: %v\n", result.Error)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"message": "User created successfully", "user": user})
 	})
 
@@ -122,6 +129,13 @@ func main() {
 		c.JSON(http.StatusOK, sensorData)
 	})
 
+	r.GET("/data/:device", func(c *gin.Context) {
+		var sensorData []SensorData
+		device := c.Param("device")
+		db.Where("device = ?", device).Find(&sensorData)
+		c.JSON(http.StatusOK, sensorData) // Return the sensor data as JSON response
+	})
+
 	// Endpoint for inserting sensor data
 	r.POST("/data", func(ctx *gin.Context) {
 		var data SensorData
@@ -134,5 +148,5 @@ func main() {
 	})
 
 	// Run the server
-	r.Run(":" + port) // listen and serve on 0.0.0.0:8080
+	r.Run(":" + port) // listen and serve on 8080
 }
