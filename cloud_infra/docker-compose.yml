@@ -121,7 +121,7 @@ services:
         MYSQL_PASSWORD: dbpass
       volumes:
         - ./mysql/var/lib/mysql:/var/lib/mysql
-        - ./init_db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+        - ./mysql/init_db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
       networks:
         idc-net:
           ipv4_address: 172.100.10.18
