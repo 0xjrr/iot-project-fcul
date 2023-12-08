@@ -39,6 +39,16 @@ export default function Home() {
     console.log(user); // Log the selected user ID or name here, for example: console.log(user.id);
   };
 
+  // Function to close the popup
+  const handleClose = () => {
+    setShowForm(false);
+  };
+
+  // Function to stop propagation of click event inside the popup
+  const handlePopupClick = (e) => {
+    e.stopPropagation();
+  };
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 min-w-full">
@@ -60,14 +70,14 @@ export default function Home() {
       <DashboardGrid selectedUser={selectedUser}/>
       <SensorDataComponent />
       {showForm && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10">
-          <div className="bg-black p-6 rounded-lg shadow-lg">
+        <div onClick={handleClose} className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10">
+          <div onClick={handlePopupClick} className="bg-black p-6 rounded-lg shadow-lg">
             <FormCreateUser />
             <button
               className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
-              onClick={() => setShowForm(false)}
+              onClick={handleClose}
             >
-              Close
+              Cancel
             </button>
           </div>
         </div>
