@@ -47,6 +47,14 @@ type ActivityData struct {
 	CaloriesPerMinute float64 `json:"calories_per_minute"`
 }
 
+type ActivityGroupData struct {
+	TimeGrouping          string  `json:"time_grouping"`
+	WalkingDistanceMeters float64 `json:"walking_distance_meters"`
+	RunningDistanceMeters float64 `json:"running_distance_meters"`
+	WalkingCalories       float64 `json:"walking_calories"`
+	RunningCalories       float64 `json:"running_calories"`
+}
+
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins, or specify
@@ -187,6 +195,145 @@ func main() {
 		if err := db.Raw(query, device, device).Scan(&results).Error; err != nil {
 			log.Printf("Error querying activity data: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying activity data"})
+			return
+		}
+
+		// Return the results
+		c.JSON(http.StatusOK, results)
+	})
+
+	r.GET("/data/activity-grouping", func(c *gin.Context) {
+		var results []ActivityGroupData
+
+		// Extract sensor device name and time grouping from query parameters
+		device := c.Query("sensorName")
+		timeGrouping := c.Query("timeGrouping")
+
+		if device == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Device parameter is required"})
+			return
+		}
+
+		// Prepare the SQL query based on time grouping
+		var query string
+		switch timeGrouping {
+		case "day":
+			query = `SELECT 
+			a.TimeGrouping,
+			a.Walking_seconds * b.WalkingSpeedMetersPerSecond AS WalkingDistanceMeters,
+			a.Running_seconds * b.RunningSpeedMetersPerSecond AS RunningDistanceMeters,
+			a.Walking_minutes * b.WalkingCaloriesPerMinute AS WalkingCalories,
+			a.Running_minutes * b.RunningCaloriesPerMinute AS RunningCalories
+		FROM 
+		(SELECT 
+			CONCAT(DAY(recorded_date), ' ', MONTHNAME(recorded_date), ' ', YEAR(recorded_date)) AS TimeGrouping,  
+			SUM(CASE WHEN activity = 0 THEN 1 ELSE 0 END) AS Walking_seconds,
+			SUM(CASE WHEN activity = 1 THEN 1 ELSE 0 END) AS Running_seconds,
+			SUM(CASE WHEN activity = 0 THEN 1 ELSE 0 END)/60 AS Walking_minutes,
+			SUM(CASE WHEN activity = 1 THEN 1 ELSE 0 END)/60 AS Running_minutes
+		FROM (SELECT Max(activity)   activity,
+							   Time(timestamp) AS recorded_time,
+							   Date(timestamp) AS recorded_date
+						FROM   sensor_data
+						WHERE  device = ?
+						GROUP  BY recorded_date,
+								  recorded_time) activity_table
+		GROUP BY TimeGrouping
+		) a, (
+		SELECT 
+			SUM(CASE WHEN Activity = 'walking' THEN SpeedMetersperSecond ELSE 0 END) AS WalkingSpeedMetersPerSecond,
+			SUM(CASE WHEN Activity = 'walking' THEN CaloriesPerMinute ELSE 0 END) AS WalkingCaloriesPerMinute,
+			SUM(CASE WHEN Activity = 'running' THEN SpeedMetersperSecond ELSE 0 END) AS RunningSpeedMetersPerSecond,
+			SUM(CASE WHEN Activity = 'running' THEN CaloriesPerMinute ELSE 0 END) AS RunningCaloriesPerMinute
+		FROM 
+			(SELECT CASE WHEN activity = 1 THEN 'running' ELSE 'walking' END AS Activity,
+			   ( activity + 1 ) * meterspersecond             AS SpeedMetersperSecond,
+			   0.035 * weight + ( Pow(( activity + 1 ) * meterspersecond, 2) / height )
+								* 0.029
+								* weight                      AS CaloriesPerMinute
+		FROM   (SELECT activity,
+					   Count(*) AS seconds_t
+				FROM   (SELECT Max(activity)   activity,
+							   Time(timestamp) AS recorded_time,
+							   Date(timestamp) AS recorded_date
+						FROM   sensor_data
+						WHERE  device = ?
+						GROUP  BY recorded_date,
+								  recorded_time) activity_table
+				GROUP  BY activity) new,
+			   (SELECT meterspersecond,
+					   users.weight,
+					   users.height
+				FROM   WalkingSpeed,
+					   users
+				WHERE  users.age >= WalkingSpeed.agemin
+					   AND users.age <= WalkingSpeed.agemax
+					   AND users.gender = WalkingSpeed.gender
+					   AND users.device = ?) ms ) as stats_table
+		) b`
+		case "month":
+			query = `SELECT 
+			a.TimeGrouping,
+			a.Walking_seconds * b.WalkingSpeedMetersPerSecond AS WalkingDistanceMeters,
+			a.Running_seconds * b.RunningSpeedMetersPerSecond AS RunningDistanceMeters,
+			a.Walking_minutes * b.WalkingCaloriesPerMinute AS WalkingCalories,
+			a.Running_minutes * b.RunningCaloriesPerMinute AS RunningCalories
+		FROM 
+		(SELECT 
+			CONCAT(MONTHNAME(recorded_date), ' ', YEAR(recorded_date)) AS TimeGrouping,  
+			SUM(CASE WHEN activity = 0 THEN 1 ELSE 0 END) AS Walking_seconds,
+			SUM(CASE WHEN activity = 1 THEN 1 ELSE 0 END) AS Running_seconds,
+			SUM(CASE WHEN activity = 0 THEN 1 ELSE 0 END)/60 AS Walking_minutes,
+			SUM(CASE WHEN activity = 1 THEN 1 ELSE 0 END)/60 AS Running_minutes
+		FROM (SELECT Max(activity)   activity,
+							   Time(timestamp) AS recorded_time,
+							   Date(timestamp) AS recorded_date
+						FROM   sensor_data
+						WHERE  device = ?
+						GROUP  BY recorded_date,
+								  recorded_time) activity_table
+		GROUP BY TimeGrouping
+		) a, (
+		SELECT 
+			SUM(CASE WHEN Activity = 'walking' THEN SpeedMetersperSecond ELSE 0 END) AS WalkingSpeedMetersPerSecond,
+			SUM(CASE WHEN Activity = 'walking' THEN CaloriesPerMinute ELSE 0 END) AS WalkingCaloriesPerMinute,
+			SUM(CASE WHEN Activity = 'running' THEN SpeedMetersperSecond ELSE 0 END) AS RunningSpeedMetersPerSecond,
+			SUM(CASE WHEN Activity = 'running' THEN CaloriesPerMinute ELSE 0 END) AS RunningCaloriesPerMinute
+		FROM 
+			(SELECT CASE WHEN activity = 1 THEN 'running' ELSE 'walking' END AS Activity,
+			   ( activity + 1 ) * meterspersecond             AS SpeedMetersperSecond,
+			   0.035 * weight + ( Pow(( activity + 1 ) * meterspersecond, 2) / height )
+								* 0.029
+								* weight                      AS CaloriesPerMinute
+		FROM   (SELECT activity,
+					   Count(*) AS seconds_t
+				FROM   (SELECT Max(activity)   activity,
+							   Time(timestamp) AS recorded_time,
+							   Date(timestamp) AS recorded_date
+						FROM   sensor_data
+						WHERE  device = ?
+						GROUP  BY recorded_date,
+								  recorded_time) activity_table
+				GROUP  BY activity) new,
+			   (SELECT meterspersecond,
+					   users.weight,
+					   users.height
+				FROM   WalkingSpeed,
+					   users
+				WHERE  users.age >= WalkingSpeed.agemin
+					   AND users.age <= WalkingSpeed.agemax
+					   AND users.gender = WalkingSpeed.gender
+					   AND users.device = ?) ms ) as stats_table
+		) b`
+		default:
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid time grouping"})
+			return
+		}
+
+		// Execute the query
+		if err := db.Raw(query, device, device, device).Scan(&results).Error; err != nil {
+			log.Printf("Error querying activity summary data: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying activity summary data"})
 			return
 		}
 
