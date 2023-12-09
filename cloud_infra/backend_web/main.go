@@ -20,6 +20,7 @@ type User struct {
 	Age        int          `gorm:"not null"`
 	Gender     string       `gorm:"not null"`
 	Weight     int          `gorm:"not null"`
+	Height     float64      `gorm:"not null"`
 	Device     string       `gorm:"primaryKey;unique;not null;index"` // This is a unique identifier for the device
 	SensorData []SensorData `gorm:"foreignKey:Device;references:Device;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

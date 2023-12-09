@@ -10,6 +10,7 @@ const FormCreateUser = () => {
   const [weight, setWeight] = useState("");
   const [gender, setGender] = useState("");
   const [device, setDevice] = useState("");
+  const [height, setHeight] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +20,7 @@ const FormCreateUser = () => {
       Email: email,
       Age: parseInt(age),
       Weight: parseInt(weight),
+      Height: parseFloat(height),
       Gender: gender,
       Device: device,
     };
@@ -72,6 +74,19 @@ const FormCreateUser = () => {
         />
       </div>
       <div className="flex justify-between items-center">
+        <label className="w-1/3">Height:</label>
+        <input
+          className="bg-transparent text-white rounded-md border-white border-2 w-2/3"
+          type="number"
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+          min={0.5} // Set minimum value to 0.50 meters
+          max={2.5} // Set maximum value to 2.50 meters
+          step={0.01} // Allow increments of 0.01 for precision
+          required
+        />
+      </div>
+      <div className="flex justify-between items-center">
         <label className="w-1/3">Age:</label>
         <input
           className="bg-transparent text-white rounded-md border-white border-2 w-2/3"
@@ -91,9 +106,27 @@ const FormCreateUser = () => {
           onChange={(e) => setGender(e.target.value)}
           required
         >
-          <option className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3" value="" disabled selected>Select Gender</option> {/* Placeholder option */}
-          <option className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3" value="Female">Female</option>
-          <option className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3" value="Male">Male</option>
+          <option
+            className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3"
+            value=""
+            disabled
+            selected
+          >
+            Select Gender
+          </option>{" "}
+          {/* Placeholder option */}
+          <option
+            className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3"
+            value="Female"
+          >
+            Female
+          </option>
+          <option
+            className="bg-gray-800 text-white rounded-md border-white border-2 w-2/3"
+            value="Male"
+          >
+            Male
+          </option>
         </select>
       </div>
       <div className="flex justify-between items-center">
