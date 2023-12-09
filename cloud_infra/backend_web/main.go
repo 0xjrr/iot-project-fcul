@@ -39,6 +39,14 @@ type SensorData struct {
 	Timestamp time.Time `gorm:"not null"`
 }
 
+type ActivityData struct {
+	Activity          string  `json:"activity"`
+	Minutes           float64 `json:"minutes"`
+	Speed             float64 `json:"speed"`
+	ActivityMeters    float64 `json:"activity_meters"`
+	CaloriesPerMinute float64 `json:"calories_per_minute"`
+}
+
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins, or specify
@@ -135,6 +143,55 @@ func main() {
 		device := c.Param("device")
 		db.Where("device = ?", device).Find(&sensorData)
 		c.JSON(http.StatusOK, sensorData) // Return the sensor data as JSON response
+	})
+
+	r.GET("/data/activity", func(c *gin.Context) {
+		var results []ActivityData
+
+		// Extract sensor device name from query parameter
+		device := c.Query("device")
+		if device == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Device parameter is required"})
+			return
+		}
+
+		// SQL query
+		query := `	SELECT CASE WHEN activity = 1 THEN 'running' ELSE 'walking' END AS Activity,
+							seconds_t / 60                                 AS Minutes,
+							( activity + 1 ) * meterspersecond             AS Speed,
+							( activity + 1 ) * meterspersecond * seconds_t AS ActivityMeters,
+							0.035 * weight + ( Pow(( activity + 1 ) * meterspersecond, 2) / height )
+											* 0.029
+											* weight                      AS CaloriesPerMinute
+					FROM   (SELECT activity,
+									Count(*) AS seconds_t
+							FROM   (SELECT Max(activity)   activity,
+											Time(timestamp) AS recorded_time,
+											Date(timestamp) AS recorded_date
+									FROM   sensor_data
+									WHERE  device = ?
+									GROUP  BY recorded_date,
+											recorded_time) activity_table
+							GROUP  BY activity) new,
+							(SELECT meterspersecond,
+									users.weight,
+									users.height
+							FROM   WalkingSpeed,
+									users
+							WHERE  users.age >= WalkingSpeed.agemin
+									AND users.age <= WalkingSpeed.agemax
+									AND users.gender = WalkingSpeed.gender
+									AND users.device = ?) ms `
+
+		// Execute the query
+		if err := db.Raw(query, device, device).Scan(&results).Error; err != nil {
+			log.Printf("Error querying activity data: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying activity data"})
+			return
+		}
+
+		// Return the results
+		c.JSON(http.StatusOK, results)
 	})
 
 	// Endpoint for inserting sensor data
