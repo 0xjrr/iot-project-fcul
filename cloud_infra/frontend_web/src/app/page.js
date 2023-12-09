@@ -31,7 +31,7 @@ export default function Home() {
     };
 
     fetchUsers();
-  }, []);
+  }, [showForm]);
 
 
   const handleUserSelection = (user) => {
@@ -42,6 +42,10 @@ export default function Home() {
   // Function to close the popup
   const handleClose = () => {
     setShowForm(false);
+  };
+
+  const handleFormSubmit = () => {
+    setShowForm(false); // This will close the modal
   };
 
   // Function to stop propagation of click event inside the popup
@@ -72,7 +76,7 @@ export default function Home() {
       {showForm && (
         <div onClick={handleClose} className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10">
           <div onClick={handlePopupClick} className="bg-black p-6 rounded-lg shadow-lg">
-            <FormCreateUser />
+            <FormCreateUser onFormSubmit={handleFormSubmit}/>
             <button
               className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
               onClick={handleClose}

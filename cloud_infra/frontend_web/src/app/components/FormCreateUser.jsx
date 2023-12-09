@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const FormCreateUser = () => {
+const FormCreateUser = ({ onFormSubmit }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
@@ -28,11 +28,12 @@ const FormCreateUser = () => {
     try {
       const response = await axios.post("http://localhost:8080/user", userData);
       console.log("User created:", response.data);
-      // Handle the response here, maybe clear the form or show a success message
+      // Clear the form
+      onFormSubmit()
     } catch (error) {
       console.error("Error creating user:", error);
       console.log(userData);
-      // Handle error here, show error message to user
+      // Show error message to user
     }
   };
 
