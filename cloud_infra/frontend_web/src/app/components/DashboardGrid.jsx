@@ -7,7 +7,6 @@ import {
   Text,
   Metric,
   Flex,
-  ProgressCircle,
   AreaChart,
   Title,
 } from "@tremor/react";
@@ -18,45 +17,11 @@ import IconPinDistanceLine from "./IconPinDistanceLine";
 import IconRefresh from "./IconRefresh";
 import IconAppleWatch from "./IconAppleWatch";
 
-const chartdata = [
-  {
-    date: "Jan 22",
-    Walking: 2890,
-    Activity: 1175,
-  },
-  {
-    date: "Feb 22",
-    Walking: 1156,
-    Activity: 3475,
-  },
-  {
-    date: "Mar 22",
-    Walking: 1122,
-    Activity: 3475,
-  },
-  {
-    date: "Apr 22",
-    Walking: 3470,
-    Activity: 1175,
-  },
-  {
-    date: "May 22",
-    Walking: 2075,
-    Activity: 3475,
-  },
-  {
-    date: "Jun 22",
-    Walking: 1129,
-    Activity: 3475,
-  },
-];
-
-const valueFormatter = function (number) {
-  return new Intl.NumberFormat("us").format(number).toString() + "\nmeters";
-};
-
 const DashboardGrid = ({ selectedUser }) => {
+  const [timeGrouping, setTimeGrouping] = useState("day"); // 'day' or 'month'
   const [sensorData, setSensorData] = useState([]);
+  const [caloriesChartData, setCaloriesChartData] = useState([]);
+  const [distanceChartData, setDistanceChartData] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
@@ -74,11 +39,41 @@ const DashboardGrid = ({ selectedUser }) => {
     }
   };
 
+  const fetchCaloriesAndDistanceData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/data/activity-grouping?sensorName=${selectedUser.Device}&timeGrouping=${timeGrouping}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+
+      // Process data for chart
+      const caloriesData = data.map((item) => ({
+        date: item.time_grouping,
+        WalkingCalories: item.walking_calories,
+        RunningCalories: item.running_calories,
+      }));
+      setCaloriesChartData(caloriesData);
+
+      const distanceData = data.map((item) => ({
+        date: item.time_grouping,
+        WalkingDistance: item.walking_distance_meters,
+        RunningDistance: item.running_distance_meters,
+      }));
+      setDistanceChartData(distanceData);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   useEffect(() => {
     if (selectedUser) {
       fetchData();
+      fetchCaloriesAndDistanceData();
     }
-  }, [selectedUser]);
+  }, [selectedUser, timeGrouping]);
 
   return (
     <>
@@ -86,8 +81,11 @@ const DashboardGrid = ({ selectedUser }) => {
         <Col numColSpan={1} numColSpanLg={3}>
           <Card>
             <Flex>
-              <Text>{selectedUser ? `${selectedUser.Name}` : "Select User or Create One"}</Text>
-
+              <Text>
+                {selectedUser
+                  ? `${selectedUser.Name}`
+                  : "Select User or Create One"}
+              </Text>
               <button onClick={fetchData}>
                 <IconRefresh
                   className="text-white-700"
@@ -106,6 +104,14 @@ const DashboardGrid = ({ selectedUser }) => {
                   width="30px"
                   height="30px"
                 />
+                <button
+                  className="my-4"
+                  onClick={() =>
+                    setTimeGrouping(timeGrouping === "day" ? "month" : "day")
+                  }
+                >
+                  {timeGrouping === "day" ? "Switch to Month" : "Switch to Day"}
+                </button>
               </Flex>
             )}
           </Card>
@@ -116,7 +122,7 @@ const DashboardGrid = ({ selectedUser }) => {
               <Card key={index}>
                 <Flex alignItems="center">
                   <Title>
-                    {"Total Distance "}
+                    {"Total Distance "}{" "}
                     {data.activity.charAt(0).toUpperCase() +
                       data.activity.slice(1)}
                   </Title>
@@ -163,30 +169,38 @@ const DashboardGrid = ({ selectedUser }) => {
               </Card>
             </>
           ))}
-        <Card className="max-w-sm mx-auto">
-          <Flex className="space-x-5" justifyContent="start">
-            <ProgressCircle value={75.5} size="lg" />
-            <div>
-              <Text className="font-medium text-gray-700">
-                Value Callout (75%)
-              </Text>
-              <Text>Text context</Text>
-            </div>
-          </Flex>
-        </Card>
-        <Col numColSpan={1} numColSpanLg={2}>
-          <Card>
-            <Title>Distance over time</Title>
-            <AreaChart
-              className="h-72  mt-4"
-              data={chartdata}
-              index="date"
-              categories={["Walking", "Activity"]}
-              colors={["indigo", "cyan"]}
-              valueFormatter={valueFormatter}
-            />
-          </Card>
-        </Col>
+        {/* Calories Chart */}
+        {caloriesChartData && caloriesChartData.length > 0 && (
+          <Col numColSpan={1} numColSpanLg={3}>
+            <Card>
+              <Title>Calories Burned Over Time</Title>
+              <AreaChart
+                className="h-72 mt-4"
+                data={caloriesChartData}
+                index="date"
+                categories={["WalkingCalories", "RunningCalories"]}
+                colors={["orange", "red"]}
+                valueFormatter={(number) => `${number.toFixed(0)} cal`}
+              />
+            </Card>
+          </Col>
+        )}
+
+        {distanceChartData && distanceChartData.length > 0 && (
+          <Col numColSpan={1} numColSpanLg={3}>
+            <Card>
+              <Title>Distance Over Time</Title>
+              <AreaChart
+                className="h-72 mt-4"
+                data={distanceChartData}
+                index="date"
+                categories={["WalkingDistance", "RunningDistance"]}
+                colors={["blue", "green"]}
+                valueFormatter={(number) => `${number.toFixed(0)} meters`}
+              />
+            </Card>
+          </Col>
+        )}
       </Grid>
     </>
   );
