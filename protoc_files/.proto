@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package inference;
+
+// The inference service definition.
+service InferenceService {
+  // Sends sensor data to be processed.
+  rpc ProcessData (SensorData) returns (InferenceResult) {}
+}
+
+// The request message containing sensor data.
+message SensorData {
+  float acceleration_x = 1;
+  float acceleration_y = 2;
+  float acceleration_z = 3;
+  float gyro_x = 4;
+  float gyro_y = 5;
+  float gyro_z = 6;
+  string device_name = 7;
+  string timestamp = 8;
+}
+
+// The response message containing the inference result.
+message InferenceResult {
+  // Define the fields for your inference result
+  string result = 1;
+}
