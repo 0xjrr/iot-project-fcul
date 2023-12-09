@@ -72,7 +72,6 @@ export default function Home() {
         <UserSelection onUserSelect={handleUserSelection} users={users} setShowForm={setShowForm}/>
       </div>
       <DashboardGrid selectedUser={selectedUser}/>
-      <SensorDataComponent />
       {showForm && (
         <div onClick={handleClose} className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10">
           <div onClick={handlePopupClick} className="bg-black p-6 rounded-lg shadow-lg">
