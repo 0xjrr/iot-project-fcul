@@ -138,9 +138,9 @@ func main() {
 		c.JSON(http.StatusOK, sensorData)
 	})
 
-	r.GET("/data/:device", func(c *gin.Context) {
+	r.GET("/data/:sensorName", func(c *gin.Context) {
 		var sensorData []SensorData
-		device := c.Param("device")
+		device := c.Param("sensorName")
 		db.Where("device = ?", device).Find(&sensorData)
 		c.JSON(http.StatusOK, sensorData) // Return the sensor data as JSON response
 	})
@@ -149,7 +149,7 @@ func main() {
 		var results []ActivityData
 
 		// Extract sensor device name from query parameter
-		device := c.Query("device")
+		device := c.Query("sensorName")
 		if device == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Device parameter is required"})
 			return
