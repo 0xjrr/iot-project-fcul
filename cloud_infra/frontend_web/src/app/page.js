@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import DashboardGrid from "./components/DashboardGrid";
@@ -9,13 +9,10 @@ import SensorDataComponent from "./components/SensorDataComponent";
 import { useState, useEffect } from "react";
 import { Modal } from "@nextui-org/react";
 
-
 export default function Home() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
-
-
 
   useEffect(() => {
     // Fetch users from the server
@@ -32,7 +29,6 @@ export default function Home() {
 
     fetchUsers();
   }, [showForm]);
-
 
   const handleUserSelection = (user) => {
     setSelectedUser(user);
@@ -53,29 +49,33 @@ export default function Home() {
     e.stopPropagation();
   };
 
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 min-w-full">
+    <main className="flex min-h-screen flex-col items-center p-24 min-w-full">
       <div className="flex justify-between w-full md:w-4/5 mx-auto">
         <div className="flex items-center">
           {" "}
-          <Image
-            src={image}
-            alt="Image Description"
-            height={100}
-          />
-          {" "}
+          <Image src={image} alt="Image Description" height={100} />{" "}
           <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl ">
-            {selectedUser ? `Hello, ${selectedUser.Name}` : 'Dashboard'}
+            {selectedUser ? `Hello, ${selectedUser.Name}` : "Dashboard"}
           </h1>
         </div>
-        <UserSelection onUserSelect={handleUserSelection} users={users} setShowForm={setShowForm}/>
+        <UserSelection
+          onUserSelect={handleUserSelection}
+          users={users}
+          setShowForm={setShowForm}
+        />
       </div>
-      <DashboardGrid selectedUser={selectedUser}/>
+      <DashboardGrid selectedUser={selectedUser} />
       {showForm && (
-        <div onClick={handleClose} className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10">
-          <div onClick={handlePopupClick} className="bg-black p-6 rounded-lg shadow-lg">
-            <FormCreateUser onFormSubmit={handleFormSubmit}/>
+        <div
+          onClick={handleClose}
+          className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-10"
+        >
+          <div
+            onClick={handlePopupClick}
+            className="bg-black p-6 rounded-lg shadow-lg"
+          >
+            <FormCreateUser onFormSubmit={handleFormSubmit} />
             <button
               className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
               onClick={handleClose}
