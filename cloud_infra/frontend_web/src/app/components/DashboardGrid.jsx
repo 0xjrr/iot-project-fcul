@@ -65,6 +65,8 @@ const DashboardGrid = ({ selectedUser }) => {
       setDistanceChartData(distanceData);
     } catch (error) {
       setError(error.message);
+      setCaloriesChartData([]);
+      setDistanceChartData([]);
     }
   };
 
