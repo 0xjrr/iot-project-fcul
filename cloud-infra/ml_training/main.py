@@ -6,6 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import FunctionTransformer
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import pickle
@@ -28,7 +29,7 @@ def scale01(x):
 # Create a pipeline with preprocessing and modeling steps
 pipeline = Pipeline([
     ('imputer', SimpleImputer(strategy='mean')),
-    ('scaler', FunctionTransformer(func=scale01)),
+    ('scaler', MinMaxScaler()),
     ('clf', RandomForestClassifier())
 ])
 
@@ -43,7 +44,7 @@ print("Recall:", recall_score(y_test, y_pred))
 print("F1 Score:", f1_score(y_test, y_pred))
 
 # Retrain on entire dataset
-pipeline.fit(X, y)
+# pipeline.fit(X, y)
 
 # Serialize the pipeline using pickle
 with open(os.path.join(os.getcwd(),'model','pipeline.pkl'), 'wb+') as file:
