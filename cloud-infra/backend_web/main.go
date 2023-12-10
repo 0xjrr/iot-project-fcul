@@ -94,6 +94,7 @@ func main() {
 	db.AutoMigrate(&User{}, &SensorData{})
 
 	// Set up Gin
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(CORSMiddleware())
 
