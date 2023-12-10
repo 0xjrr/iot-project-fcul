@@ -22,9 +22,6 @@ y = df['activity']
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
 
-# Define the scaling function
-def scale01(x):
-    return (x - x.min()) / (x.max() - x.min())
 
 # Create a pipeline with preprocessing and modeling steps
 pipeline = Pipeline([

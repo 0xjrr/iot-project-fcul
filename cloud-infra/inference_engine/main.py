@@ -22,10 +22,6 @@ MYSQL_PASSWORD = os.getenv('DB_PASS', 'your_password')
 MODEL_PATH = os.path.join(os.getcwd(), 'models', 'pipeline.pkl')
 model = None
 
-# Define the scaling function
-def scale01(x):
-    return (x - x.min()) / (x.max() - x.min())
-
 def load_model():
     global model 
     while not os.path.exists(MODEL_PATH):
