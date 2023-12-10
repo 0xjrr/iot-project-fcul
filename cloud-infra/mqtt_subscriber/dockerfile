@@ -27,4 +27,4 @@ RUN mkdir -p ./app/model
 RUN mkdir -p ./app/data
 
 # Run main.py when the container launches
-CMD ["python", "./main.py"]
+CMD ["python", "-u", "./main.py"]
