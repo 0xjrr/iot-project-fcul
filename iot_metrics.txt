@@ -1,7 +1,0 @@
-distancia
-minutes walking
-minutes running
-calorias
-distancia por hora grafico
-
-
