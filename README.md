@@ -14,6 +14,23 @@ This repository contains the infrastructure and application code for an end-to-e
 - `mysql`: The database for storing sensor data.
 - `phpmyadmin` & `adminer`: Database management tools accessible via web UI.
 
+## Technologies Used
+
+- **Docker & Docker Compose**: For containerization and orchestration of all services.
+- **Go**: High-performance language used to build the backend API.
+- **React**: A JavaScript library for building the user interface.
+- **Python**: Used in the MQTT subscriber and machine learning services.
+- **MQTT**: A machine-to-machine connectivity protocol for IoT device messaging.
+- **MySQL**: A relational database management system for storing sensor data.
+- **PHPMyAdmin & Adminer**: Web-based database management tools.
+- **Scikit-learn**: A machine learning library used in the training of models.
+- **TensorFlow**: An open-source framework used for machine learning and artificial intelligence.
+- **Mosquitto**: An open-source MQTT broker.
+- **Gin**: A high-performance web framework for Go.
+- **GORM**: The ORM library for Golang for handling database operations.
+- **Next.js**: A React framework for server-side rendered applications used in the frontend.
+- **Protocol Buffers (gRPC)**: A method of serializing structured data used in communication protocols.
+
 ## Getting Started
 
 To get the infrastructure up and running, make sure you have Docker and Docker Compose installed on your system.
